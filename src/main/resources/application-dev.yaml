@@ -1,0 +1,44 @@
+server:
+  port: 1201
+
+spring:
+  application:
+    name: learnext
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/learnext
+    username: learnext
+    password: learnext
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          time_zone: UTC
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      username: learnext
+      password: learnext123
+
+  cache:
+    type: redis
+    redis:
+      time-to-live: 600000 # 10 phút
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
