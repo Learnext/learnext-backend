@@ -15,6 +15,4 @@ public class UserResponse {
     private String fullName;
     private String avatarUrl;
     private UserStatus status;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }

@@ -1,5 +1,7 @@
 package edu.ptithcm.learnnextbackend.modules.user.impl;
 
+import edu.ptithcm.learnnextbackend.common.core.exception.BadRequestException;
+import edu.ptithcm.learnnextbackend.common.utils.PasswordUtil;
 import edu.ptithcm.learnnextbackend.modules.user.UserRepository;
 import edu.ptithcm.learnnextbackend.modules.user.UserService;
 import edu.ptithcm.learnnextbackend.modules.user.entity.User;
@@ -19,14 +21,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public User createUser(CreateUserRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already exists");
+            throw new BadRequestException("Email already exists");
         }
-
-        
-
+        String passwordHash = PasswordUtil.hash(request.getPassword());
         User user = User.builder()
                 .email(request.getEmail())
-                .passwordHash(request.getPassword())
+                .passwordHash(passwordHash)
                 .fullName(request.getFullName())
                 .avatarUrl(request.getAvatarUrl())
                 .status(UserStatus.ACTIVE)
@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new BadRequestException("User not found"));
     }
 
     @Override
@@ -48,13 +48,22 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getById(UUID id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new BadRequestException("User not found"));
+
+        if (user.getStatus() == UserStatus.DELETED) {
+            throw new BadRequestException("User has been deleted");
+        }
+
+        return user;
     }
 
     @Override
     public List<User> getAllUsers() {
-        return userRepository.findAll();
+        return userRepository.findAll()
+                .stream()
+                .filter(user -> user.getStatus() != UserStatus.DELETED)
+                .toList();
     }
 
     @Override
@@ -67,9 +76,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(UUID id) {
-
         User user = getById(id);
-
-        userRepository.delete(user);
+        user.setStatus(UserStatus.DELETED);
+        userRepository.save(user);
     }
 }

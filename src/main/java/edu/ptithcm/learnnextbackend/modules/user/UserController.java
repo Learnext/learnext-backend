@@ -25,7 +25,6 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<List<UserResponse>> getAll() {
-
         List<UserResponse> users = userService.getAllUsers()
                 .stream()
                 .map(this::toResponse)
@@ -46,7 +45,6 @@ public class UserController {
             @PathVariable UUID id,
             @RequestBody UpdateUserRequest request
     ) {
-
         User user = userService.update(
                 id,
                 request.getFullName(),
@@ -69,8 +67,6 @@ public class UserController {
                 .fullName(user.getFullName())
                 .avatarUrl(user.getAvatarUrl())
                 .status(user.getStatus())
-                .createdAt(user.getCreatedAt())
-                .updatedAt(user.getUpdatedAt())
                 .build();
     }
 }
