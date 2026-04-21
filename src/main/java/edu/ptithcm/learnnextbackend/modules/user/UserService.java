@@ -1,15 +1,18 @@
 package edu.ptithcm.learnnextbackend.modules.user;
 
 import edu.ptithcm.learnnextbackend.modules.user.dto.CreateUserRequest;
+import edu.ptithcm.learnnextbackend.modules.user.dto.CreateUserResponse;
+import edu.ptithcm.learnnextbackend.modules.user.dto.UpdateUserRequest;
 import edu.ptithcm.learnnextbackend.modules.user.entity.User;
+
 import java.util.UUID;
 import java.util.List;
 public interface UserService {
-    User createUser(CreateUserRequest request);
+    CreateUserResponse createUser(CreateUserRequest request);
     User findByEmail(String email);
     boolean existsByEmail(String email);
-    User getById(UUID id);
-    List<User> getAllUsers();
-    User update(UUID id, String fullName, String avatarUrl);
+    CreateUserResponse getById(UUID id);
+    List<CreateUserResponse> getAllUsers();
+    CreateUserResponse update(UUID id, UpdateUserRequest request);
     void delete(UUID id);
 }

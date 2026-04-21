@@ -7,6 +7,8 @@ import edu.ptithcm.learnnextbackend.modules.user.UserService;
 import edu.ptithcm.learnnextbackend.modules.user.entity.User;
 import edu.ptithcm.learnnextbackend.modules.user.enums.UserStatus;
 import edu.ptithcm.learnnextbackend.modules.user.dto.CreateUserRequest;
+import edu.ptithcm.learnnextbackend.modules.user.dto.CreateUserResponse;
+import edu.ptithcm.learnnextbackend.modules.user.dto.UpdateUserRequest;
 
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
@@ -19,10 +21,11 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public User createUser(CreateUserRequest request) {
+    public CreateUserResponse createUser(CreateUserRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new BadRequestException("Email already exists");
         }
+
         String passwordHash = PasswordUtil.hash(request.getPassword());
         User user = User.builder()
                 .email(request.getEmail())
@@ -32,7 +35,8 @@ public class UserServiceImpl implements UserService {
                 .status(UserStatus.ACTIVE)
                 .build();
 
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        return toCreateUserResponse(savedUser);
     }
 
     @Override
@@ -47,37 +51,52 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getById(UUID id) {
+    public CreateUserResponse getById(UUID id) {
+        return toCreateUserResponse(getActiveUserById(id));
+    }
+
+    @Override
+    public List<CreateUserResponse> getAllUsers() {
+        return userRepository.findAllByStatusNot(UserStatus.DELETED)
+                .stream()
+                .map(this::toCreateUserResponse)
+                .toList();
+    }
+
+    @Override
+    public CreateUserResponse update(UUID id, UpdateUserRequest request) {
+        User user = getActiveUserById(id);
+        user.setFullName(request.getFullName());
+        user.setAvatarUrl(request.getAvatarUrl());
+        User savedUser = userRepository.save(user);
+        return toCreateUserResponse(savedUser);
+    }
+
+    @Override
+    public void delete(UUID id) {
+        User user = getActiveUserById(id);
+        user.setStatus(UserStatus.DELETED);
+        userRepository.save(user);
+    }
+
+    private User getActiveUserById(UUID id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException("User not found"));
 
         if (user.getStatus() == UserStatus.DELETED) {
-            throw new BadRequestException("User has been deleted");
+            throw new BadRequestException("User not found");
         }
 
         return user;
     }
 
-    @Override
-    public List<User> getAllUsers() {
-        return userRepository.findAll()
-                .stream()
-                .filter(user -> user.getStatus() != UserStatus.DELETED)
-                .toList();
-    }
-
-    @Override
-    public User update(UUID id, String fullName, String avatarUrl) {
-        User user = getById(id);
-        user.setFullName(fullName);
-        user.setAvatarUrl(avatarUrl);
-        return userRepository.save(user);
-    }
-
-    @Override
-    public void delete(UUID id) {
-        User user = getById(id);
-        user.setStatus(UserStatus.DELETED);
-        userRepository.save(user);
+    private CreateUserResponse toCreateUserResponse(User user) {
+        return CreateUserResponse.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .fullName(user.getFullName())
+                .avatarUrl(user.getAvatarUrl())
+                .status(user.getStatus())
+                .build();
     }
 }
