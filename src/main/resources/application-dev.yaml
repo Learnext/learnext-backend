@@ -20,17 +20,23 @@ spring:
         jdbc:
           time_zone: UTC
 
-  # data:
-  #   redis:
-  #     host: localhost
-  #     port: 6379
-  #     username: learnext
-  #     password: learnext123
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      username: learnext
+      password: learnext123
 
-  # cache:
-  #   type: redis
-  #   redis:
-  #     time-to-live: 600000 # 10 phút
+  cache:
+    type: redis
+    redis:
+      time-to-live: 600000 # 10 phút
+
+jwt:
+  # Tối thiểu 256-bit (32 ký tự) cho HS256
+  secret: a8f9d2k3l4m5n6p7q8r9s0t1u2v3w4x5
+  access-token-expiry: 900      # 15 phút (seconds)
+  refresh-token-expiry: 604800  # 7 ngày (seconds)
 
 logging:
   level:
