@@ -1,4 +1,4 @@
-package edu.ptithcm.learnnextbackend.modules.user.dto;
+package edu.ptithcm.learnnextbackend.modules.user.dto.request;
 
 import java.util.UUID;
 

@@ -1,4 +1,4 @@
-package edu.ptithcm.learnnextbackend.modules.user.dto;
+package edu.ptithcm.learnnextbackend.modules.user.dto.response;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;

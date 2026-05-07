@@ -1,4 +1,4 @@
-package edu.ptithcm.learnnextbackend.modules.user.dto;
+package edu.ptithcm.learnnextbackend.modules.user.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
