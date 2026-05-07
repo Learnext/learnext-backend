@@ -19,6 +19,7 @@ import edu.ptithcm.learnnextbackend.modules.user.entity.User;
 import edu.ptithcm.learnnextbackend.modules.user.enums.UserStatus;
 import edu.ptithcm.learnnextbackend.modules.auth.JwtService;
 import edu.ptithcm.learnnextbackend.common.core.exception.BadRequestException;
+import edu.ptithcm.learnnextbackend.modules.user.impl.UserProfileServiceImpl;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -33,6 +34,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private UserProfileServiceImpl userProfileService;
 
     @Override
     public RegisterResponse register(RegisterRequest req) {
@@ -50,6 +54,7 @@ public class AuthServiceImpl implements AuthService {
                 .build();
         try {
             User savedUser = userRepository.save(user);
+            userProfileService.createProfileRegister(savedUser, req.getFullName());
 
             return RegisterResponse.builder()
                     .id(savedUser.getId().toString())
@@ -59,6 +64,7 @@ public class AuthServiceImpl implements AuthService {
         } catch (DataIntegrityViolationException e) {
             throw new BadRequestException("Email already exists");
         }
+
     }
 
     @Override

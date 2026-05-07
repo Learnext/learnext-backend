@@ -6,9 +6,9 @@ import edu.ptithcm.learnnextbackend.modules.user.UserRepository;
 import edu.ptithcm.learnnextbackend.modules.user.UserService;
 import edu.ptithcm.learnnextbackend.modules.user.entity.User;
 import edu.ptithcm.learnnextbackend.modules.user.enums.UserStatus;
-import edu.ptithcm.learnnextbackend.modules.user.dto.CreateUserRequest;
-import edu.ptithcm.learnnextbackend.modules.user.dto.CreateUserResponse;
-import edu.ptithcm.learnnextbackend.modules.user.dto.UpdateUserRequest;
+import edu.ptithcm.learnnextbackend.modules.user.dto.request.CreateUserRequest;
+import edu.ptithcm.learnnextbackend.modules.user.dto.request.CreateUserResponse;
+import edu.ptithcm.learnnextbackend.modules.user.dto.response.UpdateUserRequest;
 
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
                 .email(request.getEmail())
                 .passwordHash(passwordHash)
                 .fullName(request.getFullName())
-                .avatarUrl(request.getAvatarUrl())
+                // .avatarUrl(request.getAvatarUrl())
                 .status(UserStatus.ACTIVE)
                 .build();
 
@@ -67,7 +67,6 @@ public class UserServiceImpl implements UserService {
     public CreateUserResponse update(UUID id, UpdateUserRequest request) {
         User user = getActiveUserById(id);
         user.setFullName(request.getFullName());
-        user.setAvatarUrl(request.getAvatarUrl());
         User savedUser = userRepository.save(user);
         return toCreateUserResponse(savedUser);
     }
@@ -95,7 +94,6 @@ public class UserServiceImpl implements UserService {
                 .id(user.getId())
                 .email(user.getEmail())
                 .fullName(user.getFullName())
-                .avatarUrl(user.getAvatarUrl())
                 .status(user.getStatus())
                 .build();
     }
