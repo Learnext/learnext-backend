@@ -5,8 +5,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import edu.ptithcm.learnnextbackend.modules.user.dto.request.CreateUserRequest;
-import edu.ptithcm.learnnextbackend.modules.user.dto.request.CreateUserResponse;
-import edu.ptithcm.learnnextbackend.modules.user.dto.response.UpdateUserRequest;
+import edu.ptithcm.learnnextbackend.modules.user.dto.request.UpdateUserRequest;
+import edu.ptithcm.learnnextbackend.modules.user.dto.response.CreateUserResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import java.util.List;

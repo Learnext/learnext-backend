@@ -1,8 +1,8 @@
 package edu.ptithcm.learnnextbackend.modules.user;
 
 import edu.ptithcm.learnnextbackend.modules.user.dto.request.CreateUserRequest;
-import edu.ptithcm.learnnextbackend.modules.user.dto.request.CreateUserResponse;
-import edu.ptithcm.learnnextbackend.modules.user.dto.response.UpdateUserRequest;
+import edu.ptithcm.learnnextbackend.modules.user.dto.request.UpdateUserRequest;
+import edu.ptithcm.learnnextbackend.modules.user.dto.response.CreateUserResponse;
 import edu.ptithcm.learnnextbackend.modules.user.entity.User;
 
 import java.util.UUID;

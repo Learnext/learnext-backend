@@ -7,8 +7,8 @@ import edu.ptithcm.learnnextbackend.modules.user.UserService;
 import edu.ptithcm.learnnextbackend.modules.user.entity.User;
 import edu.ptithcm.learnnextbackend.modules.user.enums.UserStatus;
 import edu.ptithcm.learnnextbackend.modules.user.dto.request.CreateUserRequest;
-import edu.ptithcm.learnnextbackend.modules.user.dto.request.CreateUserResponse;
-import edu.ptithcm.learnnextbackend.modules.user.dto.response.UpdateUserRequest;
+import edu.ptithcm.learnnextbackend.modules.user.dto.request.UpdateUserRequest;
+import edu.ptithcm.learnnextbackend.modules.user.dto.response.CreateUserResponse;
 
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
