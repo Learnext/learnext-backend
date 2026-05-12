@@ -77,10 +77,13 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     @Override
     public void revokeToken(String rawToken) {
         String hash = hashToken(rawToken);
-        repository.findByTokenHash(hash).ifPresent(t -> {
-            t.setRevoked(true);
-            repository.save(t);
-        });
+        RefreshToken token = repository.findByTokenHash(hash)
+                .orElseThrow(() -> new BadRequestException("Refresh token không hợp lệ hoặc đã hết hạn"));
+        if (!token.isValid()) {
+            throw new BadRequestException("Refresh token không hợp lệ hoặc đã hết hạn");
+        }
+        token.setRevoked(true);
+        repository.save(token);
         evictFromRedis(hash);
     }
  

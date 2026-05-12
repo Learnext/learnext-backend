@@ -51,8 +51,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(auth);
  
             } catch (JwtException e) {
-                // Token invalid hoặc expired — không set auth, tiếp tục filter chain
-                // Spring Security sẽ trả 401 nếu endpoint yêu cầu auth
+                // Token invalid hoặc expired — không set auth, tiếp tục filter chain.
+                // Với SS7, endpoint yêu cầu authenticated() cần exceptionHandling (SecurityConfig) để trả 401.
                 log.debug("JWT validation failed: {}", e.getMessage());
             }
         }
