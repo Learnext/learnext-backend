@@ -24,6 +24,9 @@ spring:
       port: 6379
       username: learnext
       password: learnext123
+      timeout: 3s
+      repositories:
+        enabled: false
 
   cache:
     type: redis
@@ -40,3 +43,11 @@ springdoc:
     enabled: true
   swagger-ui:
     enabled: true
+
+minio:
+  endpoint: http://localhost:9000
+  access-key: learnext
+  secret-key: learnext123
+  bucket: learnext
+  region: us-east-1
+  timeout: 3s
