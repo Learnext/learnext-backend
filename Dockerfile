@@ -1,14 +1,30 @@
-# Base image JDK 25
-FROM eclipse-temurin:25-jdk
+# =========================
+# Stage 1: Build with Maven
+# =========================
+FROM eclipse-temurin:25-jdk AS builder
 
-# Tạo thư mục app
 WORKDIR /app
 
-# Copy file jar vào container
-COPY target/*.jar app.jar
+COPY pom.xml .
+COPY mvnw .
+COPY .mvn .mvn
 
-# Expose port (tuỳ app, ví dụ Spring Boot)
+RUN ./mvnw dependency:go-offline -q
+
+COPY src ./src
+
+RUN ./mvnw clean package -DskipTests
+
+
+# =========================
+# Stage 2: Run the app
+# =========================
+FROM eclipse-temurin:25-jdk
+
+WORKDIR /app
+
+COPY --from=builder /app/target/*.jar app.jar
+
 EXPOSE 1201
 
-# Chạy ứng dụng
 ENTRYPOINT ["java", "-jar", "app.jar"]

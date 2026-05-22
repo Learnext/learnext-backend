@@ -6,7 +6,7 @@ spring:
     name: learnext
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/learnext
+    url: jdbc:postgresql://100.64.0.5:5432/learnext
     username: learnext
     password: learnext
 
@@ -22,10 +22,13 @@ spring:
 
   data:
     redis:
-      host: localhost
+      host: 100.64.0.7
       port: 6379
-      # username: learnext
-      # password: learnext123
+      username: learnext
+      password: learnext
+      timeout: 3s
+      repositories:
+        enabled: false
 
   cache:
     type: redis
@@ -48,3 +51,12 @@ springdoc:
     enabled: true
   swagger-ui:
     enabled: true
+
+
+minio:
+  endpoint: http://100.64.0.8:9000
+  access-key: learnext
+  secret-key: learnext123
+  bucket: learnext
+  region: us-east-1
+  timeout: 3s

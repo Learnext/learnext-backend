@@ -3,7 +3,6 @@ package edu.ptithcm.learnnextbackend.modules.greeting.impl;
 import edu.ptithcm.learnnextbackend.modules.greeting.GreetingRepository;
 import edu.ptithcm.learnnextbackend.modules.greeting.GreetingService;
 import edu.ptithcm.learnnextbackend.modules.greeting.dto.response.GreetingResponse;
-import edu.ptithcm.learnnextbackend.modules.greeting.entity.Greeting;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,11 +13,14 @@ public class GreetingServiceImpl implements GreetingService {
 
     @Override
     public GreetingResponse hello() {
-        Greeting greeting = greetingRepository.findById(1L)
-                .orElseThrow(() -> new RuntimeException("Not found"));
-        return GreetingResponse.builder()
-                .id(greeting.getId())
-                .message(greeting.getMessage())
-                .build();
+        return greetingRepository.findById(1L)
+                .map(greeting -> GreetingResponse.builder()
+                        .id(greeting.getId())
+                        .message(greeting.getMessage())
+                        .build())
+                .orElseGet(() -> GreetingResponse.builder()
+                        .id(0L)
+                        .message("Hello from LearnNext")
+                        .build());
     }
 }
