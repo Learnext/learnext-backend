@@ -48,6 +48,14 @@ public class CategoryServiceImpl implements CategoryService {
                 .toList();
     }
 
+    @Override
+    public CategoryResponse getById(UUID id) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new BadRequestException("Category not found"));
+
+        return toResponse(category);
+    }
+
     private CategoryResponse toResponse(Category category) {
         return CategoryResponse.builder()
                 .id(category.getId())

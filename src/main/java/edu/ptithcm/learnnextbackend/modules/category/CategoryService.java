@@ -11,4 +11,6 @@ public interface CategoryService {
     CategoryResponse create(CreateCategoryRequest request);
 
     List<CategoryResponse> getAll();
+
+    CategoryResponse getById(UUID id);
 }
