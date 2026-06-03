@@ -9,7 +9,9 @@ import edu.ptithcm.learnnextbackend.modules.category.entity.Category;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.text.Normalizer;
+import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 public class CategoryServiceImpl implements CategoryService {
 
@@ -36,6 +38,14 @@ public class CategoryServiceImpl implements CategoryService {
                 .build();
 
         return toResponse(categoryRepository.save(category));
+    }
+
+    @Override
+    public List<CategoryResponse> getAll() {
+        return categoryRepository.findAll()
+                .stream()
+                .map(this::toResponse)
+                .toList();
     }
 
     private CategoryResponse toResponse(Category category) {
