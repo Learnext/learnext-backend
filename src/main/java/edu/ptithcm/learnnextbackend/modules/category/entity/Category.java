@@ -21,8 +21,8 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "name_category", nullable = false, unique = true)
-    private String nameCategory;
+    @Column(name = "name", nullable = false, unique = true)
+    private String name;
 
     @Column(nullable = false, unique = false)
     private String slug;

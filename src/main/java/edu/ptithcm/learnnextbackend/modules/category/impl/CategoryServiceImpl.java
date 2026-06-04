@@ -7,12 +7,15 @@ import edu.ptithcm.learnnextbackend.modules.category.dto.request.CreateCategoryR
 import edu.ptithcm.learnnextbackend.modules.category.dto.response.CategoryResponse;
 import edu.ptithcm.learnnextbackend.modules.category.entity.Category;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.stereotype.Service;
 
 import java.text.Normalizer;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
+@Service
 public class CategoryServiceImpl implements CategoryService {
 
     @Autowired
@@ -20,18 +23,21 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryResponse create(CreateCategoryRequest req) {
-        if (categoryRepository.existsByNameIgnoreCase(req.getName())) {
-            throw new BadRequestException("Category already exists");
-        }
-
         String slug = toSlug(req.getName());
 
-        if (categoryRepository.existsBySlug(slug)) {
-            throw new BadRequestException("Category slug already exists");
+        if (slug == null || slug.isBlank()) {
+            throw new RuntimeException("Category slug is invalid");
+        }
+
+        boolean nameExists = categoryRepository.existsByNameIgnoreCase(req.getName());
+        boolean slugExists = categoryRepository.existsBySlug(slug);
+
+        if (nameExists || slugExists) {
+            throw new RuntimeException("Category name or slug already exists");
         }
 
         Category category = Category.builder()
-                .nameCategory(req.getName())
+                .name(req.getName())
                 .slug(slug)
                 .description(req.getDescription())
                 .active(true)
@@ -59,7 +65,7 @@ public class CategoryServiceImpl implements CategoryService {
     private CategoryResponse toResponse(Category category) {
         return CategoryResponse.builder()
                 .id(category.getId())
-                .name(category.getNameCategory())
+                .name(category.getName())
                 .slug(category.getSlug())
                 .description(category.getDescription())
                 .active(category.isActive())
@@ -67,12 +73,16 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     private String toSlug(String input) {
-        String normalized = Normalizer.normalize(input, Normalizer.Form.NFD);
+        String normalized = java.text.Normalizer.normalize(input, java.text.Normalizer.Form.NFD);
+
         return normalized
                 .replaceAll("\\p{M}", "")
-                .toLowerCase(Locale.ROOT)
+                .replace("đ", "d")
+                .replace("Đ", "D")
+                .toLowerCase(java.util.Locale.ROOT)
                 .replaceAll("[^a-z0-9\\s-]", "")
                 .trim()
-                .replaceAll("\\s+", "-");
+                .replaceAll("\\s+", "-")
+                .replaceAll("-+", "-");
     }
 }
