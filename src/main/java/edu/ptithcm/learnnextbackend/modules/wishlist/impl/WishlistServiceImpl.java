@@ -59,6 +59,16 @@ public class WishlistServiceImpl implements WishlistService {
         wishlistRepository.delete(wishlist);
     }
 
+    @Override
+    public boolean check(UUID courseId) {
+        User user = getCurrentUser();
+
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new RuntimeException("Course not found"));
+
+        return wishlistRepository.existsByUserAndCourse(user, course);
+    }
+
     private User getCurrentUser() {
         String email = SecurityContextHolder.getContext()
                 .getAuthentication()
