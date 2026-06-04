@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -67,6 +68,16 @@ public class WishlistServiceImpl implements WishlistService {
                 .orElseThrow(() -> new RuntimeException("Course not found"));
 
         return wishlistRepository.existsByUserAndCourse(user, course);
+    }
+
+    @Override
+    public List<WishlistResponse> getMyWishlist() {
+        User user = getCurrentUser();
+
+        return wishlistRepository.findByUserOrderByCreatedAtDesc(user)
+                .stream()
+                .map(this::toResponse)
+                .toList();
     }
 
     private User getCurrentUser() {
