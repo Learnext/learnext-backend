@@ -1,14 +1,14 @@
 server:
-  port: 1201
+  port: ${SERVER_PORT:1201}
 
 spring:
   application:
     name: learnext
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/learnext
-    username: learnext
-    password: learnext
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/learnext}
+    username: ${DB_USERNAME:learnext}
+    password: ${DB_PASSWORD:learnext}
 
   jpa:
     hibernate:
@@ -22,21 +22,31 @@ spring:
 
   data:
     redis:
-      host: localhost
-      port: 6379
-      # username: learnext
-      # password: learnext123
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      username: ${REDIS_USERNAME:}
+      password: ${REDIS_PASSWORD:}
 
   cache:
     type: redis
     redis:
-      time-to-live: 600000 # 10 phút
+      time-to-live: 600000
 
 jwt:
-  # Tối thiểu 256-bit (32 ký tự) cho HS256
-  secret: a8f9d2k3l4m5n6p7q8r9s0t1u2v3w4x5
-  access-token-expiry: 900      # 15 phút (seconds)
-  refresh-token-expiry: 604800  # 7 ngày (seconds)
+  secret: ${JWT_SECRET:a8f9d2k3l4m5n6p7q8r9s0t1u2v3w4x5}
+  access-token-expiry: ${JWT_ACCESS_TOKEN_EXPIRY:900}
+  refresh-token-expiry: ${JWT_REFRESH_TOKEN_EXPIRY:604800}
+
+storage:
+  minio:
+    endpoint: ${MINIO_ENDPOINT:http://localhost:9000}
+    access-key: ${MINIO_ACCESS_KEY:minioadmin}
+    secret-key: ${MINIO_SECRET_KEY:minioadmin}
+    bucket: ${MINIO_BUCKET:learnext}
+    public-base-url: ${MINIO_PUBLIC_BASE_URL:http://localhost:9000/learnext}
+
+admin:
+  key: ${ADMIN_KEY:dev-admin-key}
 
 logging:
   level:

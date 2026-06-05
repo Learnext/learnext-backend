@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationTrustResolver;
 import org.springframework.security.authentication.AuthenticationTrustResolverImpl;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -36,10 +37,26 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/v1/courses/*/reviews",
+                                "/api/v1/courses/*/comments"
+                        ).permitAll()
                         .requestMatchers(
                                 "/api/v1/auth/register",
                                 "/api/v1/auth/login",
-                                "/api/v1/auth/refresh"
+                                "/api/v1/auth/refresh",
+                                "/api/v1/courses",
+                                "/api/v1/courses/*",
+                                "/api/v1/categories",
+                                "/api/v1/instructor/courses",
+                                "/api/v1/instructor/courses/*",
+                                "/api/v1/instructor/courses/*/publish",
+                                "/api/v1/uploads/signed-url",
+                                "/api/v1/admin/orders",
+                                "/api/v1/admin/orders/*/confirm",
+                                "/api/v1/admin/orders/*/reject",
+                                "/api/v1/support/leads",
+                                "/api/v1/admin/support/leads"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
