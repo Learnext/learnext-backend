@@ -1,5 +1,6 @@
 package edu.ptithcm.learnnextbackend.modules.ads.impl;
 
+import edu.ptithcm.learnnextbackend.common.core.exception.BadRequestException;
 import edu.ptithcm.learnnextbackend.modules.ads.AdsRepository;
 import edu.ptithcm.learnnextbackend.modules.ads.AdsService;
 import edu.ptithcm.learnnextbackend.modules.ads.dto.request.CreateAdsRequest;
@@ -40,7 +41,7 @@ public class AdsServiceImpl implements AdsService {
     @Override
     public AdsResponse update(UUID id, UpdateAdsRequest request) {
         Ads ads = adsRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Ads not found"));
+                .orElseThrow(() -> new BadRequestException("Ads not found"));
 
         if (request.getTitle() != null) ads.setTitle(request.getTitle());
         if (request.getImageUrl() != null) ads.setImageUrl(request.getImageUrl());
@@ -57,7 +58,7 @@ public class AdsServiceImpl implements AdsService {
     @Override
     public void delete(UUID id) {
         Ads ads = adsRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Ads not found"));
+                .orElseThrow(() -> new BadRequestException("Ads not found"));
 
         ads.setStatus(AdsStatus.INACTIVE);
         adsRepository.save(ads);
