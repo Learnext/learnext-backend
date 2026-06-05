@@ -1,5 +1,8 @@
 HELP.md
 target/
+.env
+*.log
+.codex-*.ps1
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
