@@ -36,20 +36,15 @@ public class AuthController {
     }
  
     @PostMapping("/logout")
-    public ResponseEntity<MessageResponse> logout(@RequestBody @Valid RefreshRequest req) {
+    public ResponseEntity<Void> logout(@RequestBody @Valid RefreshRequest req) {
         authService.logout(req.getRefreshToken());
-        return ResponseEntity.ok(MessageResponse.builder()
-                .message("Logged out successfully")
-                .build());
+        return ResponseEntity.noContent().build();
     }
 
     // Logout tất cả devices — yêu cầu access token hợp lệ
     @PostMapping("/logout-all")
-    public ResponseEntity<MessageResponse> logoutAll(@AuthenticationPrincipal UUID userId) {
+    public ResponseEntity<Void> logoutAll(@AuthenticationPrincipal UUID userId) {
         authService.logoutAll(userId);
-        return ResponseEntity.ok(MessageResponse.builder()
-                .message("Logged out from all devices successfully")
-                .build());
+        return ResponseEntity.noContent().build();
     }
 }
- 
