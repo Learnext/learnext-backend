@@ -162,7 +162,7 @@ public class AuthIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.accessToken").exists())
                 .andExpect(jsonPath("$.refreshToken").exists())
-                .andExpect(jsonPath("$.accessTokenExpiresIn").value(1));
+                .andExpect(jsonPath("$.accessTokenExpiresIn").value(5));
     }
 
     @Test
@@ -351,7 +351,7 @@ public class AuthIntegrationTest {
                             "Expired User");
 
             //chờ token hết hạn
-            Thread.sleep(2000);
+            Thread.sleep(6000);
 
             mockMvc.perform(post("/api/v1/auth/logout-all")
                             .header(
