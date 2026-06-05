@@ -1,5 +1,6 @@
 package edu.ptithcm.learnnextbackend.modules.cart.impl;
 
+import edu.ptithcm.learnnextbackend.common.core.exception.BadRequestException;
 import edu.ptithcm.learnnextbackend.modules.cart.CartRepository;
 import edu.ptithcm.learnnextbackend.modules.cart.CartService;
 import edu.ptithcm.learnnextbackend.modules.cart.dto.request.AddToCartRequest;
@@ -46,14 +47,14 @@ public class CartServiceImpl implements CartService {
         User user = getCurrentUser();
 
         Course course = courseRepository.findById(request.getCourseId())
-                .orElseThrow(() -> new RuntimeException("Course not found"));
+                .orElseThrow(() -> new BadRequestException("Course not found"));
 
         if (course.getStatus() != CourseStatus.PUBLISHED) {
-            throw new RuntimeException("Course is not available");
+            throw new BadRequestException("Course is not available");
         }
 
         if (cartRepository.existsByUserAndCourse(user, course)) {
-            throw new RuntimeException("Course already in cart");
+            throw new BadRequestException("Course already in cart");
         }
 
         CartItem item = CartItem.builder()
@@ -71,10 +72,10 @@ public class CartServiceImpl implements CartService {
         User user = getCurrentUser();
 
         Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new RuntimeException("Course not found"));
+                .orElseThrow(() -> new BadRequestException("Course not found"));
 
         CartItem item = cartRepository.findByUserAndCourse(user, course)
-                .orElseThrow(() -> new RuntimeException("Cart item not found"));
+                .orElseThrow(() -> new BadRequestException("Cart item not found"));
 
         cartRepository.delete(item);
 
@@ -124,6 +125,6 @@ public class CartServiceImpl implements CartService {
                 .getName();
 
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new BadRequestException("User not found"));
     }
 }
