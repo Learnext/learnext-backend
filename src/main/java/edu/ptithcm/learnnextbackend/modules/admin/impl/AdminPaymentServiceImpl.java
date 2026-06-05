@@ -2,6 +2,7 @@ package edu.ptithcm.learnnextbackend.modules.admin.impl;
 
 import edu.ptithcm.learnnextbackend.common.core.exception.BadRequestException;
 import edu.ptithcm.learnnextbackend.common.core.exception.NotFoundException;
+import edu.ptithcm.learnnextbackend.infrastructure.mail.MailService;
 import edu.ptithcm.learnnextbackend.modules.activation.ActivationCodeRepository;
 import edu.ptithcm.learnnextbackend.modules.activation.entity.ActivationCode;
 import edu.ptithcm.learnnextbackend.modules.admin.AdminPaymentService;
@@ -22,13 +23,16 @@ import java.util.UUID;
 public class AdminPaymentServiceImpl implements AdminPaymentService {
     private final OrderRepository orderRepository;
     private final ActivationCodeRepository activationCodeRepository;
+    private final MailService mailService;
 
     public AdminPaymentServiceImpl(
             OrderRepository orderRepository,
-            ActivationCodeRepository activationCodeRepository
+            ActivationCodeRepository activationCodeRepository,
+            MailService mailService
     ) {
         this.orderRepository = orderRepository;
         this.activationCodeRepository = activationCodeRepository;
+        this.mailService = mailService;
     }
 
     @Override
@@ -59,6 +63,12 @@ public class AdminPaymentServiceImpl implements AdminPaymentService {
                 .course(savedOrder.getCourse())
                 .expiresAt(LocalDateTime.now().plusHours(24))
                 .build());
+        mailService.sendActivationCode(
+                savedOrder.getUser().getEmail(),
+                savedOrder.getUser().getFullName(),
+                savedOrder.getCourse().getTitle(),
+                activationCode.getCode()
+        );
 
         return AdminPaymentResponse.builder()
                 .order(OrderMapper.toResponse(savedOrder))
