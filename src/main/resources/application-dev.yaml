@@ -60,6 +60,9 @@ storage:
 admin:
   key: ${ADMIN_KEY:dev-admin-key}
 
+cors:
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:3000}
+
 mail:
   from: ${MAIL_FROM:no-reply@learnext.local}
 
