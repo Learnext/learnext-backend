@@ -36,14 +36,15 @@ public class LessonProgress {
     @JoinColumn(name = "enrollment_id", nullable = false)
     private Enrollment enrollment;
 
-    @Column(name = "lesson_id", nullable = false)
-    private UUID lessonId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "lesson_id", nullable = false)
+    private Lesson lesson;
 
     @Column(name = "completed_at", nullable = false)
     private LocalDateTime completedAt;
 
     @PrePersist
-    protected void onCreate() {
+    void onCreate() {
         this.completedAt = LocalDateTime.now();
     }
 }
