@@ -21,6 +21,9 @@ public class OrderResponse {
     private String courseTitle;
     private BigDecimal amount;
     private String paymentProofUrl;
+    private String paymentCode;
+    private String qrImageUrl;
     private String status;
     private LocalDateTime createdAt;
+    private LocalDateTime paidAt;
 }

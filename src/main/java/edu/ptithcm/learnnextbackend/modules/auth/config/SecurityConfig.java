@@ -42,26 +42,37 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.GET,
-                                "/api/v1/courses/*/reviews",
-                                "/api/v1/courses/*/comments"
-                        ).permitAll()
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/api/v1/auth/register",
                                 "/api/v1/auth/login",
                                 "/api/v1/auth/refresh",
+                                "/api/v1/admin/login",
                                 "/api/v1/courses",
                                 "/api/v1/courses/*",
                                 "/api/v1/categories",
                                 "/api/v1/instructor/courses",
                                 "/api/v1/instructor/courses/*",
                                 "/api/v1/instructor/courses/*/publish",
+                                "/api/v1/instructor/courses/*/content",
+                                "/api/v1/instructor/courses/*/content/**",
+                                "/api/v1/instructor/sales",
                                 "/api/v1/uploads/signed-url",
+                                "/api/v1/payments/webhook",
                                 "/api/v1/admin/orders",
+                                "/api/v1/admin/orders/confirm-by-code",
                                 "/api/v1/admin/orders/*/confirm",
                                 "/api/v1/admin/orders/*/reject",
+                                "/api/v1/admin/courses",
+                                "/api/v1/admin/courses/*/approve",
+                                "/api/v1/admin/courses/*/reject",
+                                "/api/v1/admin/stats",
+                                "/api/v1/admin/instructors",
+                                "/api/v1/admin/instructors/*/toggle-status",
+                                "/api/v1/instructor-applications/admin",
+                                "/api/v1/instructor-applications/admin/*/approve",
+                                "/api/v1/instructor-applications/admin/*/reject",
                                 "/api/v1/support/leads",
                                 "/api/v1/admin/support/leads"
                         ).permitAll()

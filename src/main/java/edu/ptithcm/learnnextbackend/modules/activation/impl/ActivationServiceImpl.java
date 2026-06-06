@@ -38,14 +38,25 @@ public class ActivationServiceImpl implements ActivationService {
         if (!activationCode.getUser().getId().equals(userId)) {
             throw new NotFoundException("Activation code not found");
         }
+
+        // Kiểm tra đã đăng ký trước — nếu đã có enrollment thì trả về thành công (idempotent)
+        // bất kể code đã dùng hay hết hạn chưa
+        if (enrollmentRepository.existsByUserIdAndCourseId(userId, activationCode.getCourse().getId())) {
+            if (activationCode.getUsedAt() == null) {
+                activationCode.setUsedAt(LocalDateTime.now());
+                activationCodeRepository.save(activationCode);
+            }
+            return EnrollmentMapper.toResponse(
+                enrollmentRepository.findByUserIdAndCourseId(userId, activationCode.getCourse().getId())
+                    .orElseThrow(() -> new NotFoundException("Enrollment not found"))
+            );
+        }
+
         if (activationCode.getUsedAt() != null) {
             throw new BadRequestException("Activation code has already been used");
         }
         if (activationCode.getExpiresAt().isBefore(LocalDateTime.now())) {
             throw new BadRequestException("Activation code has expired");
-        }
-        if (enrollmentRepository.existsByUserIdAndCourseId(userId, activationCode.getCourse().getId())) {
-            throw new BadRequestException("Course already activated");
         }
 
         Enrollment enrollment = enrollmentRepository.save(Enrollment.builder()

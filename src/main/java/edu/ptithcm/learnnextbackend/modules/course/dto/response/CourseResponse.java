@@ -23,6 +23,7 @@ public class CourseResponse {
     private String thumbnailUrl;
     private String previewVideoUrl;
     private boolean hasPreview;
+    private PreviewLessonResponse previewLesson;
     private BigDecimal rating;
     private String status;
     private UUID categoryId;

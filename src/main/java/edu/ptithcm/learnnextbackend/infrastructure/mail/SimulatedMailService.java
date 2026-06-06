@@ -23,6 +23,11 @@ public class SimulatedMailService implements MailService {
 
     @Override
     public void sendActivationCode(String to, String fullName, String courseTitle, String activationCode) {
+        sendActivationCode(to, fullName, courseTitle, activationCode, null);
+    }
+
+    @Override
+    public void sendActivationCode(String to, String fullName, String courseTitle, String activationCode, String activationLink) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(mailFrom);
         message.setTo(to);
@@ -32,9 +37,10 @@ public class SimulatedMailService implements MailService {
 
                 Your payment for "%s" has been confirmed.
                 Activation code: %s
+                Activation link: %s
 
                 This code expires in 24 hours and can be used once.
-                """.formatted(fullName, courseTitle, activationCode));
+                """.formatted(fullName, courseTitle, activationCode, activationLink == null ? "(login and enter code)" : activationLink));
 
         try {
             mailSender.send(message);

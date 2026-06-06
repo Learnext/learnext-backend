@@ -1,6 +1,9 @@
 package edu.ptithcm.learnnextbackend.modules.learning.impl;
 
 import edu.ptithcm.learnnextbackend.common.core.exception.NotFoundException;
+import edu.ptithcm.learnnextbackend.modules.course.content.CourseContentService;
+import edu.ptithcm.learnnextbackend.modules.course.CourseRepository;
+import edu.ptithcm.learnnextbackend.modules.course.entity.Course;
 import edu.ptithcm.learnnextbackend.modules.enrollment.EnrollmentRepository;
 import edu.ptithcm.learnnextbackend.modules.enrollment.dto.response.EnrollmentResponse;
 import edu.ptithcm.learnnextbackend.modules.enrollment.entity.Enrollment;
@@ -9,25 +12,33 @@ import edu.ptithcm.learnnextbackend.modules.learning.LearningService;
 import edu.ptithcm.learnnextbackend.modules.learning.LessonProgressRepository;
 import edu.ptithcm.learnnextbackend.modules.learning.dto.request.CompleteLessonRequest;
 import edu.ptithcm.learnnextbackend.modules.learning.dto.response.LearningAccessResponse;
+import edu.ptithcm.learnnextbackend.modules.learning.dto.response.LearningLessonResponse;
 import edu.ptithcm.learnnextbackend.modules.learning.dto.response.LessonProgressResponse;
 import edu.ptithcm.learnnextbackend.modules.learning.entity.LessonProgress;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
 
 @Service
 public class LearningServiceImpl implements LearningService {
+    private final CourseRepository courseRepository;
     private final EnrollmentRepository enrollmentRepository;
     private final LessonProgressRepository lessonProgressRepository;
+    private final CourseContentService courseContentService;
 
     public LearningServiceImpl(
+            CourseRepository courseRepository,
             EnrollmentRepository enrollmentRepository,
-            LessonProgressRepository lessonProgressRepository
+            LessonProgressRepository lessonProgressRepository,
+            CourseContentService courseContentService
     ) {
+        this.courseRepository = courseRepository;
         this.enrollmentRepository = enrollmentRepository;
         this.lessonProgressRepository = lessonProgressRepository;
+        this.courseContentService = courseContentService;
     }
 
     @Override
@@ -44,6 +55,35 @@ public class LearningServiceImpl implements LearningService {
                 .courseId(courseId)
                 .access(enrollmentRepository.existsByUserIdAndCourseId(userId, courseId))
                 .build();
+    }
+
+    @Override
+    public List<LearningLessonResponse> getCourseLessons(UUID userId, UUID courseId) {
+        Enrollment enrollment = enrollmentRepository.findByUserIdAndCourseId(userId, courseId)
+                .orElseThrow(() -> new NotFoundException("Enrollment not found"));
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new NotFoundException("Course not found"));
+
+        List<LearningLessonResponse> contentLessons = courseContentService.getLearningLessons(enrollment.getId(), courseId);
+        if (!contentLessons.isEmpty()) {
+            return contentLessons;
+        }
+
+        if (course.getPreviewVideoUrl() == null || course.getPreviewVideoUrl().isBlank()) {
+            return List.of();
+        }
+
+        UUID lessonId = previewLessonId(courseId);
+        boolean completed = lessonProgressRepository.existsByEnrollmentIdAndLessonId(enrollment.getId(), lessonId);
+
+        return List.of(LearningLessonResponse.builder()
+                .id(lessonId)
+                .title("Preview")
+                .type("video")
+                .videoUrl(course.getPreviewVideoUrl())
+                .completed(completed)
+                .isCompleted(completed)
+                .build());
     }
 
     @Override
@@ -64,5 +104,9 @@ public class LearningServiceImpl implements LearningService {
                 .lessonId(progress.getLessonId())
                 .completedAt(progress.getCompletedAt())
                 .build();
+    }
+
+    private UUID previewLessonId(UUID courseId) {
+        return UUID.nameUUIDFromBytes(("preview-" + courseId).getBytes(StandardCharsets.UTF_8));
     }
 }

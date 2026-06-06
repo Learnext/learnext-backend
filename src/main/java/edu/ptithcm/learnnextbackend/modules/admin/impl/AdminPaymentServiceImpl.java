@@ -12,6 +12,8 @@ import edu.ptithcm.learnnextbackend.modules.order.dto.response.OrderResponse;
 import edu.ptithcm.learnnextbackend.modules.order.entity.Order;
 import edu.ptithcm.learnnextbackend.modules.order.enums.OrderStatus;
 import edu.ptithcm.learnnextbackend.modules.order.mapper.OrderMapper;
+import edu.ptithcm.learnnextbackend.modules.payment.PaymentSettlementService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,18 +26,31 @@ public class AdminPaymentServiceImpl implements AdminPaymentService {
     private final OrderRepository orderRepository;
     private final ActivationCodeRepository activationCodeRepository;
     private final MailService mailService;
+    private final PaymentSettlementService paymentSettlementService;
+
+    @Autowired
+    public AdminPaymentServiceImpl(
+            OrderRepository orderRepository,
+            ActivationCodeRepository activationCodeRepository,
+            MailService mailService,
+            PaymentSettlementService paymentSettlementService
+    ) {
+        this.orderRepository = orderRepository;
+        this.activationCodeRepository = activationCodeRepository;
+        this.mailService = mailService;
+        this.paymentSettlementService = paymentSettlementService;
+    }
 
     public AdminPaymentServiceImpl(
             OrderRepository orderRepository,
             ActivationCodeRepository activationCodeRepository,
             MailService mailService
     ) {
-        this.orderRepository = orderRepository;
-        this.activationCodeRepository = activationCodeRepository;
-        this.mailService = mailService;
+        this(orderRepository, activationCodeRepository, mailService, null);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<OrderResponse> getOrders() {
         return orderRepository.findAll()
                 .stream()
@@ -47,28 +62,53 @@ public class AdminPaymentServiceImpl implements AdminPaymentService {
     @Transactional
     public AdminPaymentResponse confirmPayment(UUID orderId) {
         Order order = requireOrder(orderId);
-        if (order.getStatus() != OrderStatus.PROOF_SUBMITTED) {
+        return confirmOrder(order, false);
+    }
+
+    @Override
+    @Transactional
+    public List<AdminPaymentResponse> confirmPaymentCode(String paymentCode) {
+        List<Order> orders = orderRepository.findAllByPaymentCode(paymentCode.trim());
+        if (orders.isEmpty()) {
+            throw new NotFoundException("Order not found");
+        }
+        return orders.stream()
+                .filter(order -> order.getStatus() != OrderStatus.PAID)
+                .map(order -> confirmOrder(order, true))
+                .toList();
+    }
+
+    private AdminPaymentResponse confirmOrder(Order order, boolean allowPendingPayment) {
+        if (order.getStatus() != OrderStatus.PROOF_SUBMITTED
+                && (!allowPendingPayment || order.getStatus() != OrderStatus.PENDING_PAYMENT)) {
             throw new BadRequestException("Only proof submitted orders can be confirmed");
         }
-        if (activationCodeRepository.existsByOrderId(orderId)) {
-            throw new BadRequestException("Activation code already exists for this order");
+        Order savedOrder;
+        if (paymentSettlementService == null) {
+            order.setStatus(OrderStatus.PAID);
+            savedOrder = orderRepository.save(order);
+        } else {
+            savedOrder = paymentSettlementService.settlePaidOrder(order);
         }
-
-        order.setStatus(OrderStatus.PAID);
-        Order savedOrder = orderRepository.save(order);
-        ActivationCode activationCode = activationCodeRepository.save(ActivationCode.builder()
-                .code(UUID.randomUUID().toString())
-                .order(savedOrder)
-                .user(savedOrder.getUser())
-                .course(savedOrder.getCourse())
-                .expiresAt(LocalDateTime.now().plusHours(24))
-                .build());
-        mailService.sendActivationCode(
-                savedOrder.getUser().getEmail(),
-                savedOrder.getUser().getFullName(),
-                savedOrder.getCourse().getTitle(),
-                activationCode.getCode()
-        );
+        ActivationCode activationCode;
+        if (activationCodeRepository.existsByOrderId(savedOrder.getId())) {
+            activationCode = activationCodeRepository.findByOrderId(savedOrder.getId())
+                    .orElseThrow(() -> new NotFoundException("Activation code not found"));
+        } else {
+            activationCode = activationCodeRepository.save(ActivationCode.builder()
+                    .code(UUID.randomUUID().toString())
+                    .order(savedOrder)
+                    .user(savedOrder.getUser())
+                    .course(savedOrder.getCourse())
+                    .expiresAt(LocalDateTime.now().plusHours(24))
+                    .build());
+            mailService.sendActivationCode(
+                    savedOrder.getUser().getEmail(),
+                    savedOrder.getUser().getFullName(),
+                    savedOrder.getCourse().getTitle(),
+                    activationCode.getCode()
+            );
+        }
 
         return AdminPaymentResponse.builder()
                 .order(OrderMapper.toResponse(savedOrder))

@@ -18,5 +18,9 @@ public class EnrollmentResponse {
     private UUID id;
     private UUID courseId;
     private String courseTitle;
+    private String thumbnailUrl;
+    private String categoryName;
+    private String instructorName;
+    private int progress;
     private LocalDateTime createdAt;
 }

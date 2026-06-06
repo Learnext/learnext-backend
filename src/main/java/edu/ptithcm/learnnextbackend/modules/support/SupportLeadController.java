@@ -19,7 +19,7 @@ public class SupportLeadController {
     private final String adminKey;
 
     public SupportLeadController(SupportLeadService supportLeadService,
-                                 @Value("${app.admin.key:}") String adminKey) {
+                                 @Value("${admin.key:}") String adminKey) {
         this.supportLeadService = supportLeadService;
         this.adminKey = adminKey;
     }

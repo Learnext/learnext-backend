@@ -52,6 +52,12 @@ public class Order {
     @Column(name = "payment_proof_url")
     private String paymentProofUrl;
 
+    @Column(name = "payment_code", length = 80)
+    private String paymentCode;
+
+    @Column(name = "paid_at")
+    private LocalDateTime paidAt;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
     private OrderStatus status;

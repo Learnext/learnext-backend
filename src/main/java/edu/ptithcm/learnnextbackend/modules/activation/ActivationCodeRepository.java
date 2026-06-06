@@ -11,5 +11,7 @@ import java.util.UUID;
 public interface ActivationCodeRepository extends JpaRepository<ActivationCode, UUID> {
     Optional<ActivationCode> findByCode(String code);
 
+    Optional<ActivationCode> findByOrderId(UUID orderId);
+
     boolean existsByOrderId(UUID orderId);
 }

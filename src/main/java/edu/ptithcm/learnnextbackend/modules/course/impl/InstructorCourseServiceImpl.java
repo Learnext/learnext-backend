@@ -36,6 +36,7 @@ public class InstructorCourseServiceImpl implements InstructorCourseService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<CourseResponse> getOwnCourses(UUID instructorId) {
         requireInstructor(instructorId);
         return courseRepository.findByInstructorIdAndStatusNotOrderByCreatedAtDesc(
@@ -90,7 +91,11 @@ public class InstructorCourseServiceImpl implements InstructorCourseService {
     @Transactional
     public CourseResponse publishCourse(UUID instructorId, UUID courseId) {
         Course course = requireOwnedCourse(instructorId, courseId);
-        course.setStatus(CourseStatus.PUBLISHED);
+        if (course.getStatus() == CourseStatus.PUBLISHED) {
+            course.setStatus(CourseStatus.DRAFT);
+        } else {
+            course.setStatus(CourseStatus.PENDING_APPROVAL);
+        }
         return CourseMapper.toResponse(courseRepository.save(course));
     }
 

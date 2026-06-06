@@ -32,6 +32,13 @@ public class CourseController {
         return ResponseEntity.ok(ApiResponse.success(courseService.searchCourses(request)));
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<List<CourseResponse>>> searchCoursesAlias(
+            @Valid @ModelAttribute CourseSearchRequest request
+    ) {
+        return ResponseEntity.ok(ApiResponse.success(courseService.searchCourses(request)));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<CourseResponse>> getCourse(@PathVariable UUID id) {
         return ResponseEntity.ok(ApiResponse.success(courseService.getPublishedCourse(id)));

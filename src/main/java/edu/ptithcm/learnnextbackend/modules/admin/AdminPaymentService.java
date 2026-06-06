@@ -11,5 +11,7 @@ public interface AdminPaymentService {
 
     AdminPaymentResponse confirmPayment(UUID orderId);
 
+    List<AdminPaymentResponse> confirmPaymentCode(String paymentCode);
+
     OrderResponse rejectPayment(UUID orderId);
 }

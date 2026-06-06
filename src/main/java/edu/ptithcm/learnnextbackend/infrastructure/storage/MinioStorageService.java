@@ -91,4 +91,5 @@ public class MinioStorageService implements StorageService {
 
         return fileName.substring(dotIndex).toLowerCase(Locale.ROOT);
     }
+
 }

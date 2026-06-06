@@ -28,6 +28,10 @@ public class CourseComment {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    private CourseComment parent;
+
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 

@@ -4,6 +4,7 @@ import edu.ptithcm.learnnextbackend.common.core.dto.ApiResponse;
 import edu.ptithcm.learnnextbackend.modules.enrollment.dto.response.EnrollmentResponse;
 import edu.ptithcm.learnnextbackend.modules.learning.dto.request.CompleteLessonRequest;
 import edu.ptithcm.learnnextbackend.modules.learning.dto.response.LearningAccessResponse;
+import edu.ptithcm.learnnextbackend.modules.learning.dto.response.LearningLessonResponse;
 import edu.ptithcm.learnnextbackend.modules.learning.dto.response.LessonProgressResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -40,6 +41,14 @@ public class LearningController {
             @PathVariable UUID courseId
     ) {
         return ResponseEntity.ok(ApiResponse.success(learningService.getCourseAccess(userId, courseId)));
+    }
+
+    @GetMapping("/courses/{courseId}/lessons")
+    public ResponseEntity<ApiResponse<List<LearningLessonResponse>>> getCourseLessons(
+            @AuthenticationPrincipal UUID userId,
+            @PathVariable UUID courseId
+    ) {
+        return ResponseEntity.ok(ApiResponse.success(learningService.getCourseLessons(userId, courseId)));
     }
 
     @PostMapping("/courses/{courseId}/complete")

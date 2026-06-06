@@ -17,6 +17,8 @@ public final class CommentDtos {
         @NotBlank
         @Size(max = 5000)
         private String content;
+
+        private UUID parentId;
     }
 
     @Getter
@@ -27,9 +29,11 @@ public final class CommentDtos {
     public static class Response {
         private UUID id;
         private UUID courseId;
+        private UUID parentId;
         private UUID userId;
         private String userName;
         private String content;
         private LocalDateTime createdAt;
+        private java.util.List<Response> replies;
     }
 }

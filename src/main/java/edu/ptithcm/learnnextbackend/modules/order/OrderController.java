@@ -3,6 +3,7 @@ package edu.ptithcm.learnnextbackend.modules.order;
 import edu.ptithcm.learnnextbackend.common.core.dto.ApiResponse;
 import edu.ptithcm.learnnextbackend.modules.order.dto.request.CreateOrderRequest;
 import edu.ptithcm.learnnextbackend.modules.order.dto.request.SubmitPaymentProofRequest;
+import edu.ptithcm.learnnextbackend.modules.order.dto.response.CartCheckoutResponse;
 import edu.ptithcm.learnnextbackend.modules.order.dto.response.OrderResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -36,13 +37,24 @@ public class OrderController {
                 .body(ApiResponse.success(orderService.createOrder(userId, request)));
     }
 
+    @PostMapping("/cart")
+    public ResponseEntity<ApiResponse<CartCheckoutResponse>> createCartOrder(
+            @AuthenticationPrincipal UUID userId,
+            @RequestBody @Valid CreateOrderRequest request
+    ) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success(orderService.createCartOrder(userId, request)));
+    }
+
     @PostMapping("/{orderId}/proof")
     public ResponseEntity<ApiResponse<OrderResponse>> submitPaymentProof(
             @AuthenticationPrincipal UUID userId,
             @PathVariable UUID orderId,
             @RequestBody @Valid SubmitPaymentProofRequest request
     ) {
-        return ResponseEntity.ok(ApiResponse.success(orderService.submitPaymentProof(userId, orderId, request)));
+        return ResponseEntity.ok(ApiResponse.success(
+                orderService.submitPaymentProof(userId, orderId, request.getPaymentProofUrl())
+        ));
     }
 
     @GetMapping

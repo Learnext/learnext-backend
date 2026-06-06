@@ -12,6 +12,10 @@ public final class EnrollmentMapper {
                 .id(enrollment.getId())
                 .courseId(enrollment.getCourse().getId())
                 .courseTitle(enrollment.getCourse().getTitle())
+                .thumbnailUrl(enrollment.getCourse().getThumbnailUrl())
+                .categoryName(enrollment.getCourse().getCategory().getName())
+                .instructorName(enrollment.getCourse().getInstructor().getFullName())
+                .progress(0)
                 .createdAt(enrollment.getCreatedAt())
                 .build();
     }
