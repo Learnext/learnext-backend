@@ -13,6 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api/v1")
 public class SupportLeadController {
     private final SupportLeadService supportLeadService;
     private final String adminKey;
@@ -23,12 +24,12 @@ public class SupportLeadController {
         this.adminKey = adminKey;
     }
 
-    @PostMapping("/api/v1/support/leads")
+    @PostMapping("/support/leads")
     public ResponseEntity<ApiResponse<SupportLeadResponse>> create(@RequestBody @Valid SupportLeadRequest request) {
         return ResponseEntity.ok(ApiResponse.success(supportLeadService.create(request)));
     }
 
-    @GetMapping("/api/v1/admin/support/leads")
+    @GetMapping("/admin/support/leads")
     public ResponseEntity<ApiResponse<List<SupportLeadResponse>>> list(@RequestHeader("X-Admin-Key") String key) {
         if (adminKey.isBlank() || !adminKey.equals(key)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Invalid admin key");
