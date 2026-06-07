@@ -94,7 +94,7 @@ public class InstructorCourseServiceImpl implements InstructorCourseService {
         if (course.getStatus() == CourseStatus.PUBLISHED) {
             course.setStatus(CourseStatus.DRAFT);
         } else {
-            course.setStatus(CourseStatus.PENDING_APPROVAL);
+            course.setStatus(CourseStatus.PUBLISHED);
         }
         return CourseMapper.toResponse(courseRepository.save(course));
     }

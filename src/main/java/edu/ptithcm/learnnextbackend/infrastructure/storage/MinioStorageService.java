@@ -21,6 +21,12 @@ public class MinioStorageService implements StorageService {
             "image/png",
             "image/webp",
             "video/mp4",
+            "video/webm",
+            "video/ogg",
+            "video/quicktime",
+            "video/x-m4v",
+            "video/x-msvideo",
+            "video/x-matroska",
             "application/pdf"
     );
 
